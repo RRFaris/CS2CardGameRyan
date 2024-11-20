@@ -18,6 +18,29 @@ public class Player {
         hand = new ArrayList<Card>();
     }
 
-//    Methods
+//    Getter methods
+    public String getName() {
+        return name;
+    }
 
+    public ArrayList<Card> getHand() {
+        return hand;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+//    Methods
+    public void addPoints(int points) {
+        this.points += points;
+    }
+
+    public void addCard(Card newCard) {
+        hand.add(newCard);
+    }
+
+    public String toString() {
+        return this.name + " has " + this.points + " points \n" + this.name + "'s cards: " + hand;
+    }
 }
