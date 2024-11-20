@@ -8,15 +8,18 @@ public class Deck {
     // Constructor
     public Deck(String[] rank, String[] suit, int[] value) {
         cards = new ArrayList<Card>();
-
+        for (int i = 0; i < suit.length; i++) {
+            for (int j = 0; j < rank.length; j++) {
+                cards.add(new Card(rank[j], suit[i], value[j]));
+            }
+        }
         cardsLeft = cards.size();
     }
 
     // Methods
     public boolean isEmpty() {
-        if (cardsLeft == 0) {
+        if (cardsLeft == 0)
             return true;
-        }
         return false;
     }
 
@@ -30,12 +33,18 @@ public class Deck {
         if (isEmpty()) {
             return null;
         }
-        return
+        return cards.get(--cardsLeft);
     }
 
     // Shuffles the deck
     public void shuffle() {
-
+        for (int i = 0; i < cards.size(); i++) {
+            int num = (int)(Math.random() * 4);
+            Card temp = cards.get(i);
+            cards.set(num, cards.get(num));
+            cards.set(i, temp);
+        }
+        cardsLeft = cards.size();
     }
 }
 
