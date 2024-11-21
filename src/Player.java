@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Player {
 //    Instance variables
-    private String name;
+    private final String name;
     private ArrayList<Card> hand;
     private int points;
 
@@ -15,7 +15,7 @@ public class Player {
     public Player(String name, ArrayList<Card> hand) {
         this.name = name;
         points = 0;
-        hand = new ArrayList<Card>();
+        this.hand = hand;
     }
 
 //    Getter methods

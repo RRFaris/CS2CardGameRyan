@@ -17,10 +17,14 @@ public class Deck {
     }
 
     // Methods
+
+
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
+
     public boolean isEmpty() {
-        if (cardsLeft == 0)
-            return true;
-        return false;
+        return cardsLeft == 0;
     }
 
     // Returns number of cards
@@ -39,10 +43,10 @@ public class Deck {
     // Shuffles the deck
     public void shuffle() {
         for (int i = 0; i < cards.size(); i++) {
-            int num = (int)(Math.random() * 4);
+            int num = (int)(Math.random() * cards.size());
             Card temp = cards.get(i);
-            cards.set(num, cards.get(num));
-            cards.set(i, temp);
+            cards.set(i, cards.get(num));
+            cards.set(num, temp);
         }
         cardsLeft = cards.size();
     }
