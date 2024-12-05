@@ -13,11 +13,20 @@ public class Deck {
                 cards.add(new Card(rank[j], suit[i], value[j]));
             }
         }
+
+
+        // Sets up the wild cards
+        for (int i = 0; i < suit.length; i++) {
+            for (int j = 0; j < 1; j++) {
+                cards.add(new Card("+2", suit[i], 2));
+                cards.add(new Card("+4", suit[i], 4));
+            }
+        }
+
         cardsLeft = cards.size();
     }
 
     // Methods
-
 
     public ArrayList<Card> getCards() {
         return cards;

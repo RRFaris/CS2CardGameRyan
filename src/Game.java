@@ -1,3 +1,6 @@
+// Ryan Faris
+// 12/5/2024
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -24,9 +27,9 @@ public class Game {
         player2 = new Player("Player 2", hand2);
 
 //        Sets up the deck of cards
-        String[] rank = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+        String[] rank = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "↻", "🚫"};
         String[] suit = {"🟥", "🟦", "🟩", "🟨"};
-        int[] value = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        int[] value = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
 //        Initializes the deck of cards
         deck = new Deck(rank, suit, value);
@@ -80,11 +83,16 @@ public class Game {
 //    Displays each player's hand
     public void printHand() {
         System.out.println("Player 1 hand:");
+
         for (int i = 0; i < player1.getHand().size(); i++) {
+            System.out.print(" " + (i + 1) + ":");
             System.out.print(player1.getHand().get(i) + " ");
         }
+
         System.out.println("\n\nPlayer 2 hand:");
+
         for (int i = 0; i < player2.getHand().size(); i++) {
+            System.out.print(" " + (i + 1) + ":");
             System.out.print(player2.getHand().get(i) + " ");
         }
     }
@@ -98,12 +106,20 @@ public class Game {
 
 //    Chooses one card from the deck to start the game
     public void setupStack() {
-        stack.add(deck.deal());
+        Card card;
+        do {
+            card = deck.deal();
+            if (card.getRank().equals("+2") || card.getRank().equals("+4") || card.getRank().equals("↻") || card.getRank().equals("🚫")) {
+                deck.shuffle();
+            }
+        } while (card.getRank().equals("+2") || card.getRank().equals("+4") || card.getRank().equals("↻") || card.getRank().equals("🚫"));
+        stack.add(card);
+
     }
 
 //    Displays stack where players put their cards
     public void printStack() {
-        System.out.println("\n\n<Stack>\n" + stack.get(stack.size() - 1));
+        System.out.println("\n\n\n\t\2\t\t\t\t<Stack>\n\t\t\t\t\t" + stack.get(stack.size() - 1));
     }
 
 //    Places a card from the player's hand onto the stack
@@ -112,8 +128,11 @@ public class Game {
         int index = 0;
         int max = 0;
 
+        Card card1 = null;
+        Card card2 = null;
+
 //        Sets the size of the array to the correct player's hand
-        if (turn == 0) {
+        if (turn %2 == 0) {
             max = player1.getHand().size() - 1;
         }
         else{
@@ -122,15 +141,20 @@ public class Game {
 
 //        Gets user input for the index of the card they want to play
         do {
-            if (turn % 2 == 0) {
-                System.out.println("\n\n[Player 1 turn]");
+            if (turn %2 == 0) {
+                System.out.println("\n\n[Player 1 turn]\n");
             }
             else {
-                System.out.println("\n\n[Player 2 turn]");
+                System.out.println("\n\n[Player 2 turn]\n");
+
             }
 
             System.out.println("(Type 0 to draw from the deck)\nWhat card would you like to play? ");
             index = (input.nextInt()) - 1;
+
+            if (index == -1) {
+                max++;
+            }
         } while (index < -2 || index > max);
 
 //        Before checking if it is a valid input, check if user wants to draw a card
@@ -146,20 +170,41 @@ public class Game {
             return;
         }
 
+//        Sets temporary variables to the player's card because removing cards mess up the index's and therefore the cards
+        card1 = player1.getHand().get(index);
+        card2 = player2.getHand().get(index);
+
+//        Give other player more cards if special card is played
+        if (isSpecial(card1) && turn %2 == 0) {
+            for (int i = 0; i < card1.getValue(); i++) {
+                player2.getHand().add(deck.deal());
+            }
+        }
+
+        if (isSpecial(card2) && turn %2 != 0) {
+            for (int i = 0; i < card2.getValue(); i++) {
+                player1.getHand().add(deck.deal());
+            }
+        }
+
 //        Checks if the card is valid
         if (turn % 2 == 0) {
-            if (isValidCard(player1.getHand().get(index))) {
-                stack.add(player1.getHand().get(index));
+            if (isValidCard(card1)) {
+                stack.add(card1);
+                if (!card1.getRank().equals("↻") && !card1.getRank().equals("🚫")) {
+                    turn++;
+                }
                 player1.getHand().remove(index);
-                turn++;
                 return;
             }
         }
         else {
-            if (isValidCard(player2.getHand().get(index))) {
-                stack.add(player2.getHand().get(index));
+            if (isValidCard(card2)) {
+                stack.add(card2);
+                if (!card2.getRank().equals("↻") && !card2.getRank().equals("🚫")) {
+                    turn++;
+                }
                 player2.getHand().remove(index);
-                turn++;
                 return;
             }
         }
@@ -168,34 +213,32 @@ public class Game {
 
 //    Checks if the card the player wants to place is valid
     public boolean isValidCard(Card card) {
-        if ((card.getSuit().equals(stack.get(stack.size() - 1).getSuit())) || (card.getValue() == stack.get(stack.size() - 1).getValue())) {
-            return true;
-        }
-        return false;
+        return (card.getSuit().equals(stack.get(stack.size() - 1).getSuit())) || (card.getValue() == stack.get(stack.size() - 1).getValue());
     }
 
 //    Checks if any of the players lost
     public boolean ifLost() {
-        if (player1.getHand().size() == 0 || player2.getHand().size() == 0) {
-            return true;
-        }
-        return false;
+        return player1.getHand().isEmpty() || player2.getHand().isEmpty();
+    }
+
+//    Checks if the card the user plays is a special card
+    public boolean isSpecial(Card card) {
+        return card.getRank().equals("+2") || card.getRank().equals("+4");
     }
 
 //    Main game loop
     public void playGame() {
         printInstructions();
         setHand(7);
-        printHand();
         setupStack();
-        printStack();
         while (!ifLost()) {
-            placeCard();
-            printStack();
-            System.out.println("\n\n");
             printHand();
+            printStack();
+            placeCard();
+            for (int i = 0; i < 20; i++) {
+                System.out.println("\n");
+            }
         }
-
     }
 
 //    Main function
