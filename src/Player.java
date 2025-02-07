@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 
 public class Player {
-//    Instance variables
+    // Instance variables
     private final String name;
     private ArrayList<Card> hand;
     private int points;
 
-//    Constructor
+    // Constructor
     public Player(String name) {
         this.name = name;
         points = 0;
@@ -18,7 +18,7 @@ public class Player {
         this.hand = hand;
     }
 
-//    Getter methods
+    // Getter methods
     public String getName() {
         return name;
     }
@@ -31,7 +31,7 @@ public class Player {
         return points;
     }
 
-//    Methods
+    // Methods
     public void addPoints(int points) {
         this.points += points;
     }

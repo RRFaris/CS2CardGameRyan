@@ -1,16 +1,23 @@
+import java.awt.*;
+
 public class Card {
-//  Instance variables
+    //  Instance variables
     private String rank;
     private String suit;
     private int value;
 
-//  Constructor
+    // Initialize frontend
+    private GameView window;
+
+    //  Constructor
     public Card(String rank, String suit, int value) {
         this.rank = rank;
         this.suit = suit;
         this.value = value;
+
+        this.window = window;
     }
-//  Getter + Setter methods
+    //  Getter + Setter methods
     public String getRank() {
         return rank;
     }
@@ -37,5 +44,9 @@ public class Card {
 
     public String toString() {
         return "|" + suit + " " + rank + "|";
+    }
+
+    public void draw(Graphics g) {
+
     }
 }
