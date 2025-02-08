@@ -1,6 +1,8 @@
 // Ryan Faris
 // 12/5/2024
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -12,8 +14,13 @@ public class Game {
     private ArrayList<Card> stack;
     private int turn;
 
+    private final int LENGTH_SUIT = 12;
+
     // Initialize frontend
     private GameView window;
+
+    // Create an array of card images
+    private Image[][] images;
 
     // Constructor
     public Game() {
@@ -39,9 +46,32 @@ public class Game {
 
         // Initializes the deck of cards
         deck = new Deck(rank, suit, value);
+
+        images = new Image[4][LENGTH_SUIT*4];
+
+        // Fill array with all images of cards
+        for (int i = 0; i < LENGTH_SUIT; i++) {
+                images[0][i] = new ImageIcon("Resources/g" + i + ".png").getImage();
+        }
+
+        for (int i = 0; i < LENGTH_SUIT; i++) {
+                images[1][i] = new ImageIcon("Resources/b" + i + ".png").getImage();
+        }
+
+        for (int i = 0; i < LENGTH_SUIT; i++) {
+                images[2][i] = new ImageIcon("Resources/y" + i + ".png").getImage();
+        }
+
+        for (int i = 0; i < LENGTH_SUIT; i++) {
+                images[3][i] = new ImageIcon("Resources/r" + i + ".png").getImage();
+        }
     }
 
     // Methods
+
+    public Image[][] getImages() {
+        return images;
+    }
 
     // Prints game name and instructions
     public void printInstructions() {

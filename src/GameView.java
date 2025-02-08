@@ -30,6 +30,12 @@ public class GameView extends JFrame {
     // Methods
     public void paint(Graphics g) {
         g.drawImage(background, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, this);
-        g.drawImage(blue0, 0, 100, this);
+//        g.drawImage(blue0, 0, 100, this);
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 12; j++) {
+                g.drawImage(window.getImages()[i][j], j * 70, i * 100 + 50, this);
+            }
+        }
     }
 }
