@@ -14,7 +14,7 @@ public class Game {
     private ArrayList<Card> stack;
     private int turn;
 
-    private final int LENGTH_SUIT = 12;
+    private final int LENGTH_SUIT = 14;
 
     // Initialize frontend
     private GameView window;
@@ -40,18 +40,15 @@ public class Game {
         player2 = new Player("Player 2", hand2);
 
         // Sets up the deck of cards
-        String[] rank = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "↻", "🚫"};
+        String[] rank = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "↻", "🚫", "+2", "+4"};
         String[] suit = {"🟥", "🟦", "🟩", "🟨"};
-        int[] value = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-
-        // Initializes the deck of cards
-        deck = new Deck(rank, suit, value);
+        int[] value = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 4};
 
         images = new Image[4][LENGTH_SUIT*4];
 
         // Fill array with all images of cards
         for (int i = 0; i < LENGTH_SUIT; i++) {
-                images[0][i] = new ImageIcon("Resources/g" + i + ".png").getImage();
+                images[0][i] = new ImageIcon("Resources/r" + i + ".png").getImage();
         }
 
         for (int i = 0; i < LENGTH_SUIT; i++) {
@@ -59,18 +56,37 @@ public class Game {
         }
 
         for (int i = 0; i < LENGTH_SUIT; i++) {
-                images[2][i] = new ImageIcon("Resources/y" + i + ".png").getImage();
+                images[2][i] = new ImageIcon("Resources/g" + i + ".png").getImage();
         }
 
         for (int i = 0; i < LENGTH_SUIT; i++) {
-                images[3][i] = new ImageIcon("Resources/r" + i + ".png").getImage();
+                images[3][i] = new ImageIcon("Resources/y" + i + ".png").getImage();
         }
+
+        // Initializes the deck of cards
+        deck = new Deck(rank, suit, value, images);
     }
 
     // Methods
 
     public Image[][] getImages() {
         return images;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public ArrayList<Card> getP1Hand() {
+        return player1.getHand();
+    }
+
+    public ArrayList<Card> getP2Hand() {
+        return player2.getHand();
+    }
+
+    public Card getStack() {
+        return stack.getLast();
     }
 
     // Prints game name and instructions
