@@ -21,8 +21,6 @@ public class Card {
         this.suit = suit;
         this.value = value;
 
-        this.window = window;
-
         this.cardImage = cardImage;
     }
     //  Getter + Setter methods

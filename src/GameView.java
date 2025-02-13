@@ -10,6 +10,7 @@ public class GameView extends JFrame {
     private final int WINDOW_WIDTH = 1000;
 
     private Image background;
+    private Image backside;
 
     // Constructor
     public GameView(Game game) {
@@ -23,11 +24,15 @@ public class GameView extends JFrame {
 
         // Initialize card images
         background = new ImageIcon("Resources/Background.png").getImage();
+        backside = new ImageIcon("Resources/Backside.png").getImage();
+
     }
 
     // Methods
     public void paint(Graphics g) {
+        // Draw background
         g.drawImage(background, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, this);
+        g.drawImage(backside, 400, 300, this);
 
         int multiplier = 1;
         for (Card c : game.getP1Hand()) {

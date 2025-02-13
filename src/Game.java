@@ -161,9 +161,7 @@ public class Game {
         Card card;
         do {
             card = deck.deal();
-            if (card.getRank().equals("+2") || card.getRank().equals("+4") || card.getRank().equals("↻") || card.getRank().equals("🚫")) {
-                deck.shuffle();
-            }
+            deck.shuffle();
         } while (card.getRank().equals("+2") || card.getRank().equals("+4") || card.getRank().equals("↻") || card.getRank().equals("🚫"));
         stack.add(card);
 
@@ -171,7 +169,7 @@ public class Game {
 
     // Displays stack where players put their cards
     public void printStack() {
-        System.out.println("\n\n\n\t\2\t\t\t\t<Stack>\n\t\t\t\t\t" + stack.get(stack.size() - 1));
+        System.out.println("\n\n\n\t\2\t\t\t\t<Stack>\n\t\t\t\t\t" + stack.getLast());
     }
 
     // Places a card from the player's hand onto the stack
@@ -180,26 +178,29 @@ public class Game {
         int index = 0;
         int max = 0;
 
-        Card card1 = null;
-        Card card2 = null;
+//        Card card1 = null;
+//        Card card2 = null;
+
+        Card card = null;
+
+        Player player = null;
+        Player otherPlayer = null;
 
         // Sets the size of the array to the correct player's hand
         if (turn %2 == 0) {
             max = player1.getHand().size() - 1;
+            player = player1;
+            otherPlayer = player2;
         }
         else{
             max = player2.getHand().size() - 1;
+            player = player2;
+            otherPlayer = player1;
         }
 
         // Gets user input for the index of the card they want to play
         do {
-            if (turn %2 == 0) {
-                System.out.println("\n\n[Player 1 turn]\n");
-            }
-            else {
-                System.out.println("\n\n[Player 2 turn]\n");
-
-            }
+            System.out.println("\n\n[" + player.getName() + " turn]\n");
 
             System.out.println("(Type 0 to draw from the deck)\nWhat card would you like to play? ");
             index = (input.nextInt()) - 1;
@@ -210,63 +211,32 @@ public class Game {
         } while (index < -2 || index > max);
 
         // Before checking if it is a valid input, check if user wants to draw a card
-        if (turn %2 == 0 && index == -1) {
-            player1.getHand().add(deck.deal());
-            turn++;
-            return;
-        }
-
-        if (turn %2 != 0 && index == -1) {
-            player2.getHand().add(deck.deal());
+        if (index == -1) {
+            player.getHand().add(deck.deal());
             turn++;
             return;
         }
 
         // Sets temporary variables to the player's card because removing cards mess up the index's and therefore the cards
-        if (turn %2 == 0 ){
-            card1 = player1.getHand().get(index);
-            card2 = player2.getHand().get(0);
-        }
-        else {
-            card2 = player2.getHand().get(index);
-            card1 = player1.getHand().get(0);
-        }
-
+        card = player.getHand().get(index);
 
         // Give other player more cards if special card is played
-        if (isSpecial(card1) && turn %2 == 0) {
-            for (int i = 0; i < card1.getValue(); i++) {
-                player2.getHand().add(deck.deal());
-            }
-        }
-
-        if (isSpecial(card2) && turn %2 != 0) {
-            for (int i = 0; i < card2.getValue(); i++) {
-                player1.getHand().add(deck.deal());
+        if (isSpecial(card)) {
+            for (int i = 0; i < card.getValue(); i++) {
+                otherPlayer.getHand().add(deck.deal());
             }
         }
 
         // Checks if the card is valid
-        if (turn % 2 == 0) {
-            if (isValidCard(card1)) {
-                stack.add(card1);
-                if (!card1.getRank().equals("↻") && !card1.getRank().equals("🚫")) {
-                    turn++;
-                }
-                player1.getHand().remove(index);
-                return;
+        if(isValidCard(card)) {
+            stack.add(card);
+            if (!card.getRank().equals("↻") && !card.getRank().equals("🚫")) {
+                turn++;
             }
+            player.getHand().remove(index);
+            return;
         }
-        else {
-            if (isValidCard(card2)) {
-                stack.add(card2);
-                if (!card2.getRank().equals("↻") && !card2.getRank().equals("🚫")) {
-                    turn++;
-                }
-                player2.getHand().remove(index);
-                return;
-            }
-        }
+
         System.out.println("Invalid Card");
     }
 
