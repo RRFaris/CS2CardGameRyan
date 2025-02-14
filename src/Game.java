@@ -14,7 +14,7 @@ public class Game {
     private ArrayList<Card> stack;
     private int turn;
 
-    private final int LENGTH_SUIT = 14;
+    private final int LENGTH_SUIT = 13;
 
     // Initialize frontend
     private GameView window;
@@ -40,9 +40,12 @@ public class Game {
         player2 = new Player("Player 2", hand2);
 
         // Sets up the deck of cards
-        String[] rank = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "↻", "🚫", "+2", "+4"};
+        String[] rank = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "↻", "🚫", "+2"};
         String[] suit = {"🟥", "🟦", "🟩", "🟨"};
-        int[] value = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 4};
+        int[] value = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2};
+
+        String[] wildRank = {"🌈", "+4"};
+        int[] wildValue = {12, 4};
 
         images = new Image[4][LENGTH_SUIT*4];
 
@@ -63,12 +66,19 @@ public class Game {
                 images[3][i] = new ImageIcon("Resources/y" + i + ".png").getImage();
         }
 
+        // Initialize wild card images
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 2; j++) {
+                images[i][14] = new ImageIcon("Resources/blackWild.png").getImage();
+                images[i][15] = new ImageIcon("Resources/blackPlus4.png").getImage();
+            }
+        }
+
         // Initializes the deck of cards
-        deck = new Deck(rank, suit, value, images);
+        deck = new Deck(rank, suit, value, wildRank, wildValue, images);
     }
 
-    // Methods
-
+    // Getter methods
     public Image[][] getImages() {
         return images;
     }
@@ -162,9 +172,8 @@ public class Game {
         do {
             card = deck.deal();
             deck.shuffle();
-        } while (card.getRank().equals("+2") || card.getRank().equals("+4") || card.getRank().equals("↻") || card.getRank().equals("🚫"));
+        } while (isAddition(card) || isWild(card) || card.getRank().equals("↻") || card.getRank().equals("🚫"));
         stack.add(card);
-
     }
 
     // Displays stack where players put their cards
@@ -178,15 +187,13 @@ public class Game {
         int index = 0;
         int max = 0;
 
-//        Card card1 = null;
-//        Card card2 = null;
-
         Card card = null;
 
         Player player = null;
         Player otherPlayer = null;
 
         // Sets the size of the array to the correct player's hand
+        // Sets Player variables to the correct player
         if (turn %2 == 0) {
             max = player1.getHand().size() - 1;
             player = player1;
@@ -221,10 +228,38 @@ public class Game {
         card = player.getHand().get(index);
 
         // Give other player more cards if special card is played
-        if (isSpecial(card)) {
+        if (isAddition(card)) {
             for (int i = 0; i < card.getValue(); i++) {
                 otherPlayer.getHand().add(deck.deal());
             }
+        }
+
+        // Asks user to switch the color when they play a wild card
+        if (isWild(card)) {
+            Scanner s = new Scanner(System.in);
+            String suit;
+            do {
+                System.out.println("What color do you want to change it to? ");
+                suit = s.nextLine();
+            } while (!suit.equals("blue") && !suit.equals("red") && !suit.equals("yellow") && !suit.equals("green"));
+
+            switch (suit) {
+                case "blue":
+                    stack.add(new Card(card.getRank(), "🟦", 19, card.getCardImage()));
+                    break;
+                case "red":
+                    stack.add(new Card(card.getRank(), "🟥", 19, card.getCardImage()));
+                    break;
+                case "yellow":
+                    stack.add(new Card(card.getRank(), "🟨", 19, card.getCardImage()));
+                    break;
+                case "green":
+                    stack.add(new Card(card.getRank(), "🟩", 19, card.getCardImage()));
+                    break;
+            }
+//            turn++;
+//            player.getHand().remove(index);
+//            return;
         }
 
         // Checks if the card is valid
@@ -242,7 +277,7 @@ public class Game {
 
     // Checks if the card the player wants to place is valid
     public boolean isValidCard(Card card) {
-        return (card.getSuit().equals(stack.get(stack.size() - 1).getSuit())) || (card.getValue() == stack.get(stack.size() - 1).getValue());
+        return (card.getSuit().equals(stack.getLast().getSuit())) || (card.getValue() == stack.getLast().getValue());
     }
 
     // Checks if any of the players lost
@@ -251,8 +286,15 @@ public class Game {
     }
 
     // Checks if the card the user plays is a special card
-    public boolean isSpecial(Card card) {
+    public boolean isAddition(Card card) {
         return card.getRank().equals("+2") || card.getRank().equals("+4");
+    }
+
+    public boolean isWild(Card card) {
+        if (card.getSuit().equals("⬛️")) {
+            return true;
+        }
+        return false;
     }
 
     // Main game loop
@@ -269,7 +311,6 @@ public class Game {
             for (int i = 0; i < 20; i++) {
                 System.out.println("\n");
             }
-
         }
     }
 

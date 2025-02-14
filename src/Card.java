@@ -24,6 +24,12 @@ public class Card {
         this.cardImage = cardImage;
     }
     //  Getter + Setter methods
+
+
+    public Image getCardImage() {
+        return cardImage;
+    }
+
     public String getRank() {
         return rank;
     }

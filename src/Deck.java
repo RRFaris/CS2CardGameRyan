@@ -7,11 +7,18 @@ public class Deck {
     private int cardsLeft;
 
     // Constructor
-    public Deck(String[] rank, String[] suit, int[] value, Image[][] images) {
+    public Deck(String[] rank, String[] suit, int[] value, String[] wildRank, int[] wildValue, Image[][] images) {
         cards = new ArrayList<Card>();
         for (int i = 0; i < suit.length; i++) {
             for (int j = 0; j < rank.length; j++) {
                 cards.add(new Card(rank[j], suit[i], value[j], images[i][j]));
+            }
+        }
+
+        // Initialize wild cards
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 2; j++) {
+                cards.add(new Card(wildRank[j], "⬛️", wildValue[j], images[i][j + 14]));
             }
         }
 
