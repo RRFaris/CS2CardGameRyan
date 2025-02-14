@@ -7,11 +7,20 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Game {
-    // Instance variables
+    // States of the game
+    public static final int WELCOME = 0;
+    public static final int PLAYING = 1;
+    public static final int WIN_ONE = 2;
+    public static final int WIN_TWO = 3;
+    private int state;
+
+    // Initialize players
     private Player player1;
     private Player player2;
+
     private Deck deck;
     private ArrayList<Card> stack;
+
     private int turn;
 
     private final int LENGTH_SUIT = 13;
@@ -24,6 +33,9 @@ public class Game {
 
     // Constructor
     public Game() {
+        // Set game state to welcome screen
+        state = WELCOME;
+
         // Initialize frontend
         window = new GameView(this);
 
@@ -99,6 +111,14 @@ public class Game {
         return stack.getLast();
     }
 
+    public int getState() {
+        return state;
+    }
+
+    public int getTurn() {
+        return turn;
+    }
+
     // Prints game name and instructions
     public void printInstructions() {
         System.out.println("                ____         ____      ____              ____        ____________");
@@ -127,6 +147,15 @@ public class Game {
                 * Who ever plays all of their cards down first wins!
                 
                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~""");
+
+        Scanner s = new Scanner(System.in);
+        String input;
+        do {
+            System.out.println("Press enter to play");
+            input = s.nextLine();
+        } while (!input.isEmpty());
+
+
     }
 
     // Fills each player's hand with a certain amount of cards
@@ -245,21 +274,22 @@ public class Game {
 
             switch (suit) {
                 case "blue":
-                    stack.add(new Card(card.getRank(), "🟦", 19, card.getCardImage()));
+                    card = new Card(card.getRank(), "🟦", 19, card.getCardImage());
+                    stack.add(card);
                     break;
                 case "red":
-                    stack.add(new Card(card.getRank(), "🟥", 19, card.getCardImage()));
+                    card = new Card(card.getRank(), "🟥", 19, card.getCardImage());
+                    stack.add(card);
                     break;
                 case "yellow":
-                    stack.add(new Card(card.getRank(), "🟨", 19, card.getCardImage()));
+                    card = new Card(card.getRank(), "🟨", 19, card.getCardImage());
+                    stack.add(card);
                     break;
                 case "green":
-                    stack.add(new Card(card.getRank(), "🟩", 19, card.getCardImage()));
+                    card = new Card(card.getRank(), "🟩", 19, card.getCardImage());
+                    stack.add(card);
                     break;
             }
-//            turn++;
-//            player.getHand().remove(index);
-//            return;
         }
 
         // Checks if the card is valid
@@ -285,6 +315,13 @@ public class Game {
         return player1.getHand().isEmpty() || player2.getHand().isEmpty();
     }
 
+    public String getWinner() {
+        if (player1.getHand().isEmpty())
+            return player1.getName();
+        else
+            return player2.getName();
+    }
+
     // Checks if the card the user plays is a special card
     public boolean isAddition(Card card) {
         return card.getRank().equals("+2") || card.getRank().equals("+4");
@@ -304,6 +341,7 @@ public class Game {
         setupStack();
         window.repaint();
         while (!ifLost()) {
+            state = PLAYING;
             printHand();
             printStack();
             placeCard();
@@ -312,6 +350,10 @@ public class Game {
                 System.out.println("\n");
             }
         }
+        if (getWinner().equals("Player 1"))
+            state = WIN_ONE;
+        else
+            state = WIN_TWO;
     }
 
     // Main function

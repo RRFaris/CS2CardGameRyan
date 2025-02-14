@@ -30,25 +30,52 @@ public class GameView extends JFrame {
 
     // Methods
     public void paint(Graphics g) {
-        // Draw background
-        g.drawImage(background, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, this);
-        g.drawImage(backside, 400, 300, this);
+        switch(game.getState()) {
+            case Game.WELCOME:
+                break;
+            case Game.PLAYING:
+                // Draw background
+                g.drawImage(background, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, this);
+                g.drawImage(backside, 400, 300, this);
 
-        int multiplier = 1;
-        for (Card c : game.getP1Hand()) {
-            g.drawString(String.valueOf(multiplier), multiplier*70-7, 45);
-            c.draw(g, multiplier, 50);
-            multiplier++;
+                // Draw player 1's hand
+                int multiplier = 1;
+                for (Card c : game.getP1Hand()) {
+                    // Draws indexes
+                    g.drawString(String.valueOf(multiplier), multiplier*70-7, 45);
+
+                    if (game.getTurn() % 2 == 0)
+                        c.setVisible(true);
+                    else
+                        c.setVisible(false);
+
+                    c.draw(g, multiplier, 50);
+                    multiplier++;
+                }
+
+                // Draw player 2's hand
+                multiplier = 1;
+                for (Card c : game.getP2Hand()) {
+                    // Draws indexes
+                    g.drawString(String.valueOf(multiplier), multiplier*70-7, 545);
+
+                    if (game.getTurn() % 2 == 1)
+                        c.setVisible(true);
+                    else
+                        c.setVisible(false);
+
+                    c.draw(g, multiplier, 550);
+                    multiplier++;
+                }
+
+                // Draws stack
+
+                game.getStack().draw(g, 1, 300);
+                break;
+            case Game.WIN_ONE:
+                break;
+            case Game.WIN_TWO:
+                break;
         }
-
-        multiplier = 1;
-        for (Card c : game.getP2Hand()) {
-            g.drawString(String.valueOf(multiplier), multiplier*70-7, 545);
-            c.draw(g, multiplier, 550);
-            multiplier++;
-        }
-
-        multiplier = 1;
-        game.getStack().draw(g, multiplier, 300);
     }
 }
