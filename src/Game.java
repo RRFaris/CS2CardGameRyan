@@ -3,16 +3,22 @@
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Game {
+public class Game implements MouseListener {
     // States of the game
     public static final int WELCOME = 0;
     public static final int PLAYING = 1;
     public static final int WIN_ONE = 2;
     public static final int WIN_TWO = 3;
     private int state;
+
+    // Location of the mouse
+    int mouseX;
+    int mouseY;
 
     // Initialize players
     private Player player1;
@@ -33,11 +39,11 @@ public class Game {
 
     // Constructor
     public Game() {
-        // Set game state to welcome screen
-        state = WELCOME;
-
         // Initialize frontend
         window = new GameView(this);
+
+        // Set game state to welcome screen
+        state = WELCOME;
 
         // Initializes the stack
         stack = new ArrayList<Card>();
@@ -88,6 +94,39 @@ public class Game {
 
         // Initializes the deck of cards
         deck = new Deck(rank, suit, value, wildRank, wildValue, images);
+
+        // Add a new mouse listener
+        this.window.addMouseListener(this);
+    }
+
+    // Mouse stuff
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        mouseX = e.getX();
+        mouseY = e.getY();
+        state = PLAYING;
+        window.repaint();
+
+        if (state == PLAYING) {
+
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
     }
 
     // Getter methods
@@ -147,15 +186,6 @@ public class Game {
                 * Who ever plays all of their cards down first wins!
                 
                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~""");
-
-        Scanner s = new Scanner(System.in);
-        String input;
-        do {
-            System.out.println("Press enter to play");
-            input = s.nextLine();
-        } while (!input.isEmpty());
-
-
     }
 
     // Fills each player's hand with a certain amount of cards
@@ -336,18 +366,19 @@ public class Game {
 
     // Main game loop
     public void playGame() {
+        window.repaint();
         printInstructions();
         setHand(7);
         setupStack();
-        window.repaint();
-        while (!ifLost()) {
-            state = PLAYING;
-            printHand();
-            printStack();
-            placeCard();
-            window.repaint();
-            for (int i = 0; i < 20; i++) {
-                System.out.println("\n");
+        if (state == PLAYING) {
+            while (!ifLost()) {
+                printHand();
+                printStack();
+                placeCard();
+                window.repaint();
+                for (int i = 0; i < 20; i++) {
+                    System.out.println("\n");
+                }
             }
         }
         if (getWinner().equals("Player 1"))

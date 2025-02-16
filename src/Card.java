@@ -7,6 +7,14 @@ public class Card {
     private String suit;
     private int value;
 
+    // Card position
+    private int cardX;
+    private int cardY;
+
+    // Card dimensions
+    private final int CARD_WIDTH = 60;
+    private final int CARD_HEIGH = 96;
+
     // Decides when to show card
     private boolean isVisible;
 
@@ -39,6 +47,13 @@ public class Card {
         isVisible = visibility;
     }
 
+    public boolean isClicked(int mouseX, int mouseY) {
+        if ((mouseX > cardX && mouseX < (cardX + CARD_WIDTH)) && (mouseY > cardY && mouseY < (cardY + CARD_HEIGH))) {
+            return true;
+        }
+        return false;
+    }
+
     public String getRank() {
         return rank;
     }
@@ -68,9 +83,11 @@ public class Card {
     }
 
     public void draw(Graphics g, int multiplier, int y) {
+        cardX = CARD_SPACING * multiplier - 50;
+        cardY = y;
         if (isVisible)
-            g.drawImage(cardImage, CARD_SPACING * multiplier - 50, y, window);
+            g.drawImage(cardImage, cardX, cardY, window);
         else
-            g.drawImage(backside, CARD_SPACING * multiplier - 50, y, window);
+            g.drawImage(backside, cardX, cardY, window);
     }
 }

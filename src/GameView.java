@@ -9,6 +9,7 @@ public class GameView extends JFrame {
     private final int WINDOW_HEIGHT = 800;
     private final int WINDOW_WIDTH = 1000;
 
+    private Image welcomeScreen;
     private Image background;
     private Image backside;
 
@@ -23,8 +24,11 @@ public class GameView extends JFrame {
         this.setVisible(true);
 
         // Initialize card images
-        background = new ImageIcon("Resources/Background.png").getImage();
         backside = new ImageIcon("Resources/Backside.png").getImage();
+
+        // Initialize backgrounds
+        background = new ImageIcon("Resources/Background.png").getImage();
+        welcomeScreen = new ImageIcon("Resources/WelcomeScreen.png").getImage();
 
     }
 
@@ -32,6 +36,7 @@ public class GameView extends JFrame {
     public void paint(Graphics g) {
         switch(game.getState()) {
             case Game.WELCOME:
+                g.drawImage(welcomeScreen, 0, 0, this);
                 break;
             case Game.PLAYING:
                 // Draw background
@@ -69,7 +74,7 @@ public class GameView extends JFrame {
                 }
 
                 // Draws stack
-
+                game.getStack().setVisible(true);
                 game.getStack().draw(g, 1, 300);
                 break;
             case Game.WIN_ONE:
