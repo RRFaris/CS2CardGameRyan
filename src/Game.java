@@ -3,12 +3,14 @@
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Game implements MouseListener {
+public class Game implements MouseListener, KeyListener {
     // States of the game
     public static final int WELCOME = 0;
     public static final int PLAYING = 1;
@@ -112,8 +114,24 @@ public class Game implements MouseListener {
         state = PLAYING;
         window.repaint();
 
-        if (state == PLAYING) {
+        Player player = null;
 
+        if (turn % 2 == 0)
+            player = player1;
+        else
+            player = player2;
+
+        if (state == PLAYING) {
+            for (Card c : player.getHand()) {
+                if (c.isClicked(mouseX, mouseY, c)) {
+                    placeCard(c);
+                    break;
+                }
+            }
+            if ((mouseX > GameView.DECK_X && mouseX < GameView.DECK_X + Card.CARD_WIDTH) && (mouseY > GameView.DECK_Y && mouseY < GameView.DECK_Y + Card.CARD_HEIGHT)) {
+                player.getHand().add(deck.deal());
+                turn++;
+            }
         }
     }
 
@@ -127,6 +145,22 @@ public class Game implements MouseListener {
 
     @Override
     public void mouseExited(MouseEvent e) {
+    }
+
+    // Keyboard stuff
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 
     // Getter methods
@@ -241,12 +275,12 @@ public class Game implements MouseListener {
     }
 
     // Places a card from the player's hand onto the stack
-    public void placeCard() {
+    public void placeCard(Card card) {
         Scanner input = new Scanner(System.in);
-        int index = 0;
-        int max = 0;
+//        int index = 0;
+//        int max = 0;
 
-        Card card = null;
+//        Card card = null;
 
         Player player = null;
         Player otherPlayer = null;
@@ -254,40 +288,42 @@ public class Game implements MouseListener {
         // Sets the size of the array to the correct player's hand
         // Sets Player variables to the correct player
         if (turn %2 == 0) {
-            max = player1.getHand().size() - 1;
+//            max = player1.getHand().size() - 1;
             player = player1;
             otherPlayer = player2;
         }
         else{
-            max = player2.getHand().size() - 1;
+//            max = player2.getHand().size() - 1;
             player = player2;
             otherPlayer = player1;
         }
 
+        ArrayList<Card> hand = player.getHand();
+
         // Gets user input for the index of the card they want to play
-        do {
-            System.out.println("\n\n[" + player.getName() + " turn]\n");
-
-            System.out.println("(Type 0 to draw from the deck)\nWhat card would you like to play? ");
-            index = (input.nextInt()) - 1;
-
-            if (index == -1) {
-                max++;
-            }
-        } while (index < -2 || index > max);
+//        do {
+//            System.out.println("\n\n[" + player.getName() + " turn]\n");
+//
+//            System.out.println("(Type 0 to draw from the deck)\nWhat card would you like to play? ");
+//            index = (input.nextInt()) - 1;
+//
+//            if (index == -1) {
+//                max++;
+//            }
+//        } while (index < -2 || index > max);
 
         // Before checking if it is a valid input, check if user wants to draw a card
-        if (index == -1) {
-            player.getHand().add(deck.deal());
-            turn++;
-            return;
-        }
+//        if (index == -1) {
+//            player.getHand().add(deck.deal());
+//            turn++;
+//            return;
+//        }
 
         // Sets temporary variables to the player's card because removing cards mess up the index's and therefore the cards
-        card = player.getHand().get(index);
+//        card = player.getHand().get(index);
 
         // Give other player more cards if special card is played
-        if (isAddition(card)) {
+        if (isAddition(card) && isValidCard(card)) {
             for (int i = 0; i < card.getValue(); i++) {
                 otherPlayer.getHand().add(deck.deal());
             }
@@ -295,6 +331,7 @@ public class Game implements MouseListener {
 
         // Asks user to switch the color when they play a wild card
         if (isWild(card)) {
+            stack.add(card);
             Scanner s = new Scanner(System.in);
             String suit;
             do {
@@ -302,24 +339,25 @@ public class Game implements MouseListener {
                 suit = s.nextLine();
             } while (!suit.equals("blue") && !suit.equals("red") && !suit.equals("yellow") && !suit.equals("green"));
 
+            String cardSuit = "";
             switch (suit) {
                 case "blue":
-                    card = new Card(card.getRank(), "🟦", 19, card.getCardImage());
-                    stack.add(card);
+                    cardSuit = "🟦";
                     break;
                 case "red":
-                    card = new Card(card.getRank(), "🟥", 19, card.getCardImage());
-                    stack.add(card);
+                    cardSuit = "🟥";
                     break;
                 case "yellow":
-                    card = new Card(card.getRank(), "🟨", 19, card.getCardImage());
-                    stack.add(card);
+                    cardSuit = "🟨";
                     break;
                 case "green":
-                    card = new Card(card.getRank(), "🟩", 19, card.getCardImage());
-                    stack.add(card);
+                    cardSuit = "🟩";
                     break;
             }
+            stack.add(new Card(card.getRank(), cardSuit, 19, card.getCardImage()));
+            turn++;
+            hand.remove(card);
+            return;
         }
 
         // Checks if the card is valid
@@ -328,7 +366,7 @@ public class Game implements MouseListener {
             if (!card.getRank().equals("↻") && !card.getRank().equals("🚫")) {
                 turn++;
             }
-            player.getHand().remove(index);
+            hand.remove(card);
             return;
         }
 
@@ -337,7 +375,7 @@ public class Game implements MouseListener {
 
     // Checks if the card the player wants to place is valid
     public boolean isValidCard(Card card) {
-        return (card.getSuit().equals(stack.getLast().getSuit())) || (card.getValue() == stack.getLast().getValue());
+        return (card.getSuit().equals(stack.getLast().getSuit())) || (card.getValue() == stack.getLast().getValue()) || isWild(card);
     }
 
     // Checks if any of the players lost
@@ -374,7 +412,7 @@ public class Game implements MouseListener {
             while (!ifLost()) {
                 printHand();
                 printStack();
-                placeCard();
+//                placeCard();
                 window.repaint();
                 for (int i = 0; i < 20; i++) {
                     System.out.println("\n");

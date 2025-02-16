@@ -6,11 +6,17 @@ public class GameView extends JFrame {
     // Instance Variables
     private Game game;
 
+    public static final int DECK_X = 770;
+    public static final int DECK_Y = 350;
+
     private final int WINDOW_HEIGHT = 800;
     private final int WINDOW_WIDTH = 1000;
 
     private Image welcomeScreen;
-    private Image background;
+    private Image player1Background;
+    private Image player2Background;
+    private Image player1Win;
+    private Image player2Win;
     private Image backside;
 
     // Constructor
@@ -27,8 +33,11 @@ public class GameView extends JFrame {
         backside = new ImageIcon("Resources/Backside.png").getImage();
 
         // Initialize backgrounds
-        background = new ImageIcon("Resources/Background.png").getImage();
         welcomeScreen = new ImageIcon("Resources/WelcomeScreen.png").getImage();
+        player1Background = new ImageIcon("Resources/Player1Background.png").getImage();
+        player2Background = new ImageIcon("Resources/Player2Background.png").getImage();
+        player1Win = new ImageIcon("Resources/Player1Win.png").getImage();
+        player2Win = new ImageIcon("Resources/Player2Win.png").getImage();
 
     }
 
@@ -40,46 +49,46 @@ public class GameView extends JFrame {
                 break;
             case Game.PLAYING:
                 // Draw background
-                g.drawImage(background, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, this);
-                g.drawImage(backside, 400, 300, this);
+                if (game.getTurn() % 2 == 0)
+                    g.drawImage(player1Background, 0, 0, this);
+                else
+                    g.drawImage(player2Background, 0, 0, this);
+
+                g.drawImage(backside, 770, 350, this);
 
                 // Draw player 1's hand
                 int multiplier = 1;
                 for (Card c : game.getP1Hand()) {
-                    // Draws indexes
-                    g.drawString(String.valueOf(multiplier), multiplier*70-7, 45);
-
                     if (game.getTurn() % 2 == 0)
                         c.setVisible(true);
                     else
-                        c.setVisible(false);
+                        c.setVisible(true); // false
 
-                    c.draw(g, multiplier, 50);
+                    c.draw(g, multiplier, 90);
                     multiplier++;
                 }
 
                 // Draw player 2's hand
                 multiplier = 1;
                 for (Card c : game.getP2Hand()) {
-                    // Draws indexes
-                    g.drawString(String.valueOf(multiplier), multiplier*70-7, 545);
-
                     if (game.getTurn() % 2 == 1)
                         c.setVisible(true);
                     else
-                        c.setVisible(false);
+                        c.setVisible(true); // false
 
-                    c.draw(g, multiplier, 550);
+                    c.draw(g, multiplier, 640);
                     multiplier++;
                 }
 
                 // Draws stack
                 game.getStack().setVisible(true);
-                game.getStack().draw(g, 1, 300);
+                game.getStack().draw(g, 1, 350);
                 break;
             case Game.WIN_ONE:
+                g.drawImage(player1Win, 0, 0, this);
                 break;
             case Game.WIN_TWO:
+                g.drawImage(player2Win, 0, 0, this);
                 break;
         }
     }

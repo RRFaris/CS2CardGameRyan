@@ -12,8 +12,8 @@ public class Card {
     private int cardY;
 
     // Card dimensions
-    private final int CARD_WIDTH = 60;
-    private final int CARD_HEIGH = 96;
+    public static final int CARD_WIDTH = 60;
+    public static final int CARD_HEIGHT = 96;
 
     // Decides when to show card
     private boolean isVisible;
@@ -47,8 +47,8 @@ public class Card {
         isVisible = visibility;
     }
 
-    public boolean isClicked(int mouseX, int mouseY) {
-        if ((mouseX > cardX && mouseX < (cardX + CARD_WIDTH)) && (mouseY > cardY && mouseY < (cardY + CARD_HEIGH))) {
+    public boolean isClicked(int mouseX, int mouseY, Card card) {
+        if ((mouseX > cardX && mouseX < (cardX + CARD_WIDTH)) && (mouseY > cardY && mouseY < (cardY + CARD_HEIGHT))) {
             return true;
         }
         return false;
@@ -83,7 +83,7 @@ public class Card {
     }
 
     public void draw(Graphics g, int multiplier, int y) {
-        cardX = CARD_SPACING * multiplier - 50;
+        cardX = (CARD_SPACING * multiplier) + 150;
         cardY = y;
         if (isVisible)
             g.drawImage(cardImage, cardX, cardY, window);
