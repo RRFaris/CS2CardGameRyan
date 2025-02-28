@@ -59,10 +59,11 @@ public class GameView extends JFrame {
                 // Draw player 1's hand
                 int multiplier = 1;
                 for (Card c : game.getP1Hand()) {
+                    // If it isn't the player's turn, their cards will be hidden
                     if (game.getTurn() % 2 == 0)
                         c.setVisible(true);
                     else
-                        c.setVisible(true); // false
+                        c.setVisible(false);
 
                     c.draw(g, multiplier, 90);
                     multiplier++;
@@ -71,10 +72,11 @@ public class GameView extends JFrame {
                 // Draw player 2's hand
                 multiplier = 1;
                 for (Card c : game.getP2Hand()) {
+                    // If it isn't the player's turn, their cards will be hidden
                     if (game.getTurn() % 2 == 1)
                         c.setVisible(true);
                     else
-                        c.setVisible(true); // false
+                        c.setVisible(false);
 
                     c.draw(g, multiplier, 640);
                     multiplier++;

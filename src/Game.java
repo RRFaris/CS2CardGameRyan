@@ -20,7 +20,7 @@ public class Game implements MouseListener {
     int mouseX;
     int mouseY;
 
-    // Initialize players
+    // Declare players
     private Player player1;
     private Player player2;
     private Player player;
@@ -28,11 +28,13 @@ public class Game implements MouseListener {
     private Deck deck;
     private ArrayList<Card> stack;
 
+    // Player's turn
     private int turn;
 
+    // How many cards in a suit
     private final int LENGTH_SUIT = 13;
 
-    // Initialize frontend
+    // Declare frontend
     private GameView window;
 
     // Create an array of card images
@@ -67,7 +69,7 @@ public class Game implements MouseListener {
         String[] wildRank = {"🌈", "+4"};
         int[] wildValue = {12, 4};
 
-        images = new Image[4][LENGTH_SUIT*4];
+        images = new Image[4][LENGTH_SUIT+ 3];
 
         // Fill array with all images of cards
         for (int i = 0; i < LENGTH_SUIT; i++) {
@@ -109,27 +111,43 @@ public class Game implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        // Track mouse position
         mouseX = e.getX();
         mouseY = e.getY();
-        state = PLAYING;
+
+        // Sets state of the game to playing
+        if (state == WELCOME)
+            state = PLAYING;
         window.repaint();
 
+        // Setting up whose turn it is
         if (turn % 2 == 0)
             player = player1;
         else
             player = player2;
 
+        // Check which card has been clicked
         if (state == PLAYING) {
             for (Card c : player.getHand()) {
                 if (c.isClicked(mouseX, mouseY, c)) {
                     placeCard(c);
+                    window.repaint();
                     break;
                 }
             }
+            // Checks if a player wants to draw a card from the deck
             if ((mouseX > GameView.DECK_X && mouseX < GameView.DECK_X + Card.CARD_WIDTH) && (mouseY > GameView.DECK_Y && mouseY < GameView.DECK_Y + Card.CARD_HEIGHT)) {
                 player.getHand().add(deck.deal());
                 turn++;
             }
+
+            if (ifLost()) {
+                if (getWinner().equals("Player 1"))
+                    state = WIN_ONE;
+                else
+                    state = WIN_TWO;
+            }
+
         }
     }
 
@@ -273,9 +291,10 @@ public class Game implements MouseListener {
             otherPlayer = player1;
         }
 
+        // Simplifies code
         ArrayList<Card> hand = player.getHand();
 
-        // Give other player more cards if special card is played
+        // Give other player more cards if an addition card is played
         if (isAddition(card) && isValidCard(card)) {
             for (int i = 0; i < card.getValue(); i++) {
                 otherPlayer.getHand().add(deck.deal());
@@ -287,32 +306,31 @@ public class Game implements MouseListener {
             stack.add(card);
             Scanner s = new Scanner(System.in);
             String suit;
+
+            // User input
             do {
                 System.out.println("What color do you want to change it to? ");
                 suit = s.nextLine();
             } while (!suit.equals("blue") && !suit.equals("red") && !suit.equals("yellow") && !suit.equals("green"));
 
+            // Changes the suit of the card to the one the player specified
             String cardSuit = "";
             switch (suit) {
                 case "blue":
                     cardSuit = "🟦";
-                    System.out.println("blue chosen");
                     break;
                 case "red":
                     cardSuit = "🟥";
-                    System.out.println("red chosen");
                     break;
                 case "yellow":
                     cardSuit = "🟨";
-                    System.out.println("yellow chosen");
                     break;
                 case "green":
                     cardSuit = "🟩";
-                    System.out.println("green chosen");
                     break;
                 }
 
-
+            // Adds a new card to the stack with the suit the player chose
             stack.add(new Card(card.getRank(), cardSuit, 19, card.getCardImage()));
             hand.remove(card);
             turn++;
@@ -369,17 +387,8 @@ public class Game implements MouseListener {
         setupStack();
         if (state == PLAYING) {
             while (!ifLost()) {
-                printHand();
-                printStack();
                 window.repaint();
-                for (int i = 0; i < 20; i++) {
-                    System.out.println("\n");
-                }
             }
-            if (getWinner().equals("Player 1"))
-                state = WIN_ONE;
-            else
-                state = WIN_TWO;
         }
     }
 
