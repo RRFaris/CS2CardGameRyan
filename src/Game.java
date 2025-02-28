@@ -3,14 +3,12 @@
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Game implements MouseListener, KeyListener {
+public class Game implements MouseListener {
     // States of the game
     public static final int WELCOME = 0;
     public static final int PLAYING = 1;
@@ -31,8 +29,6 @@ public class Game implements MouseListener, KeyListener {
     private ArrayList<Card> stack;
 
     private int turn;
-    private String colorChange;
-    private int cardIndex;
 
     private final int LENGTH_SUIT = 13;
 
@@ -103,12 +99,6 @@ public class Game implements MouseListener, KeyListener {
 
         // Add a new mouse listener
         window.addMouseListener(this);
-
-        // Add a keyboard listener
-        window.addKeyListener(this);
-
-        // If user picks a wild card, this stores the color they chose
-        colorChange = null;
     }
 
     // Mouse stuff
@@ -124,7 +114,6 @@ public class Game implements MouseListener, KeyListener {
         state = PLAYING;
         window.repaint();
 
-//        Player player = null;
         if (turn % 2 == 0)
             player = player1;
         else
@@ -133,9 +122,7 @@ public class Game implements MouseListener, KeyListener {
         if (state == PLAYING) {
             for (Card c : player.getHand()) {
                 if (c.isClicked(mouseX, mouseY, c)) {
-                    cardIndex = player.getHand().indexOf(c);
                     placeCard(c);
-                    System.out.println(cardIndex);
                     break;
                 }
             }
@@ -158,62 +145,6 @@ public class Game implements MouseListener, KeyListener {
 
     @Override
     public void mouseExited(MouseEvent e) {
-        // Necessary for code to run
-    }
-
-    // Keyboard stuff
-    @Override
-    public void keyTyped(KeyEvent e) {
-        // Necessary for code to run
-    }
-
-    String addition = "";
-    String cardSuit = "";
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if (turn % 2 == 0)
-            player = player1;
-        else
-            player = player2;
-
-        Card card = player.getHand().get(cardIndex);
-
-        if (isWild(card)) {
-            System.out.println("wild");
-            addition += e.getKeyChar();
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                colorChange = addition.substring(0, addition.length() - 1);
-                if (colorChange.equals("blue") || colorChange.equals("red") || colorChange.equals("yellow") || colorChange.equals("green")) {
-                    switch (colorChange) {
-                        case "blue":
-                            cardSuit = "🟦";
-                            System.out.println("blue chosen");
-                            break;
-                        case "red":
-                            cardSuit = "🟥";
-                            System.out.println("red chosen");
-                            break;
-                        case "yellow":
-                            cardSuit = "🟨";
-                            System.out.println("yellow chosen");
-                            break;
-                        case "green":
-                            cardSuit = "🟩";
-                            System.out.println("green chosen");
-                            break;
-                    }
-                    stack.add(new Card(card.getRank(), cardSuit, 19, card.getCardImage()));
-                }
-                else
-                    addition = "";
-                player.getHand().remove(card);
-                turn++;
-            }
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
         // Necessary for code to run
     }
 
@@ -330,7 +261,6 @@ public class Game implements MouseListener, KeyListener {
 
     // Places a card from the player's hand onto the stack
     public void placeCard(Card card) {
-//        Player player = null;
         Player otherPlayer = null;
 
         // Sets Player variables to the correct player
@@ -344,7 +274,6 @@ public class Game implements MouseListener, KeyListener {
         }
 
         ArrayList<Card> hand = player.getHand();
-//        cardIndex = hand.indexOf(card);
 
         // Give other player more cards if special card is played
         if (isAddition(card) && isValidCard(card)) {
@@ -356,38 +285,38 @@ public class Game implements MouseListener, KeyListener {
         // Asks user to switch the color when they play a wild card
         if (isWild(card)) {
             stack.add(card);
-//            Scanner s = new Scanner(System.in);
-//            String suit;
-//            do {
-//                System.out.println("What color do you want to change it to? ");
-//                suit = s.nextLine();
-//            } while (!suit.equals("blue") && !suit.equals("red") && !suit.equals("yellow") && !suit.equals("green"));
+            Scanner s = new Scanner(System.in);
+            String suit;
+            do {
+                System.out.println("What color do you want to change it to? ");
+                suit = s.nextLine();
+            } while (!suit.equals("blue") && !suit.equals("red") && !suit.equals("yellow") && !suit.equals("green"));
 
-//            String cardSuit = "";
-//            if (colorChange != null) {
-//                switch (colorChange) {
-//                    case "blue":
-//                        cardSuit = "🟦";
-//                        System.out.println("blue chosen");
-//                        break;
-//                    case "red":
-//                        cardSuit = "🟥";
-//                        System.out.println("red chosen");
-//                        break;
-//                    case "yellow":
-//                        cardSuit = "🟨";
-//                        System.out.println("yellow chosen");
-//                        break;
-//                    case "green":
-//                        cardSuit = "🟩";
-//                        System.out.println("green chosen");
-//                        break;
-//                }
-//            }
+            String cardSuit = "";
+            switch (suit) {
+                case "blue":
+                    cardSuit = "🟦";
+                    System.out.println("blue chosen");
+                    break;
+                case "red":
+                    cardSuit = "🟥";
+                    System.out.println("red chosen");
+                    break;
+                case "yellow":
+                    cardSuit = "🟨";
+                    System.out.println("yellow chosen");
+                    break;
+                case "green":
+                    cardSuit = "🟩";
+                    System.out.println("green chosen");
+                    break;
+                }
 
-//            stack.add(new Card(card.getRank(), cardSuit, 19, card.getCardImage()));
-//            turn++;
-//            return;
+
+            stack.add(new Card(card.getRank(), cardSuit, 19, card.getCardImage()));
+            hand.remove(card);
+            turn++;
+            return;
         }
 
         // Checks if the card is valid
@@ -434,23 +363,14 @@ public class Game implements MouseListener, KeyListener {
 
     // Main game loop
     public void playGame() {
-        if (turn % 2 ==0)
-            player = player1;
-        else
-            player = player2;
         window.repaint();
         printInstructions();
         setHand(7);
         setupStack();
         if (state == PLAYING) {
             while (!ifLost()) {
-//                if (turn % 2 ==0)
-//                    player = player1;
-//                else
-//                    player = player2;
                 printHand();
                 printStack();
-//                placeCard();
                 window.repaint();
                 for (int i = 0; i < 20; i++) {
                     System.out.println("\n");
